@@ -1,6 +1,6 @@
 import os
-import numpy as np
 
+import numpy as np
 
 REQUIRED_HEADERS = ["ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "nodata_value"]
 
@@ -26,7 +26,7 @@ def read_ascii_grid_headers(file_path):
                 value = int(value) if float(value).is_integer() else float(value)
 
                 headers[header_key] = value
-            except Exception as e:
+            except Exception:
                 print("Error reading header line", line_num + 1)
                 raise
 
@@ -37,15 +37,30 @@ def read_ascii_grid_headers(file_path):
 
 
 class AsciiGenerator:
-    def __init__(self, file_like=None, number_of_rows=None, number_of_columns=None, xll_corner=None, yll_corner=None, cellsize=None, nodata_value=None):
-        if not file_like and not (number_of_rows and number_of_columns and xll_corner and yll_corner and nodata_value and cellsize):
+    def __init__(
+        self,
+        file_like=None,
+        number_of_rows=None,
+        number_of_columns=None,
+        xll_corner=None,
+        yll_corner=None,
+        cellsize=None,
+        nodata_value=None,
+    ):
+        if not file_like and not (
+            number_of_rows and number_of_columns and xll_corner and yll_corner and nodata_value and cellsize
+        ):
             raise ValueError("file_like or ascii grid headers must be specified")
 
         self._file_like = file_like
 
-        self.asc_headers = self.get_asc_headers(file_like, number_of_rows, number_of_columns, xll_corner, yll_corner, cellsize, nodata_value)
-        
-    def get_asc_headers(self, file_like, number_of_rows, number_of_columns, xll_corner, yll_corner, cellsize, nodata_value):
+        self.asc_headers = self.get_asc_headers(
+            file_like, number_of_rows, number_of_columns, xll_corner, yll_corner, cellsize, nodata_value
+        )
+
+    def get_asc_headers(
+        self, file_like, number_of_rows, number_of_columns, xll_corner, yll_corner, cellsize, nodata_value
+    ):
         if file_like and os.path.isfile(file_like):
             return read_ascii_grid_headers(file_like)
 
@@ -55,7 +70,7 @@ class AsciiGenerator:
             "xllcorner": xll_corner,
             "yllcorner": yll_corner,
             "cellsize": cellsize,
-            "nodata_value": nodata_value
+            "nodata_value": nodata_value,
         }
 
     def generate_new_ascii_grid(
@@ -68,7 +83,7 @@ class AsciiGenerator:
         every_column_function=None,
         single_run_function=None,
         fmt="%d",
-        fillna = True,
+        fillna=True,
     ):
         if not new_filepath or not default_element:
             raise Exception("Filepath or default_element for the new file missing")
@@ -80,13 +95,13 @@ class AsciiGenerator:
 
         if callable(every_row_function):
             function_order.add(every_row_function)
-        
+
         if callable(every_column_function):
             function_order.add(every_column_function)
-        
+
         if callable(every_element_function):
             function_order.add(every_element_function)
-        
+
         if callable(single_run_function):
             function_order.add(single_run_function)
 
@@ -109,8 +124,14 @@ class AsciiGenerator:
     def read_matrix_from_ascii_grid_file(self, filepath):
         return np.loadtxt(filepath, skiprows=6)
 
-    def write_matrix(self, filepath, data, fmt="%d", fillna = True):
+    def write_matrix(self, filepath, data, fmt="%d", fillna=True):
         if fillna:
             data[np.isnan(data)] = 0
-        np.savetxt(filepath, data, header="\n".join([f"{k}\t{v}" for k, v in self.asc_headers.items()]), fmt=fmt, comments='', delimiter="\t")
-
+        np.savetxt(
+            filepath,
+            data,
+            header="\n".join([f"{k}\t{v}" for k, v in self.asc_headers.items()]),
+            fmt=fmt,
+            comments="",
+            delimiter="\t",
+        )
