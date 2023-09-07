@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "asc_generator"
+name = "ascii_grid_generator"
 version = "0.1.0"
 description = ""
 authors = ["Naveen Anil <naveenms01@gmail.com>"]
