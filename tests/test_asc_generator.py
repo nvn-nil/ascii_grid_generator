@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from asc_generator.asc_generator import AsciiGenerator
+from ascii_grid_generator import AsciiGenerator
 
 
 class TestAsciiGenerator(unittest.TestCase):
