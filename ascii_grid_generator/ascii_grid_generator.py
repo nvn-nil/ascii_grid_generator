@@ -106,6 +106,8 @@ class AsciiGenerator:
             function_order.add(single_run_function)
 
         for func in function_order:
+            # Different functions require different arguments
+            # TODO: Implement performant iterators for all the different processor functions
             matrix = func(matrix, self.asc_headers)
 
         self.write_matrix(new_filepath, matrix, fmt=fmt, fillna=fillna)
